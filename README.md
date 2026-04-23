@@ -2,6 +2,8 @@
 
 Base oficial para la evaluación práctica de migración del proyecto `compiler-cpp` hacia Java.
 
+> **Apoyo importante para estudiantes:** si necesitás más contexto sobre tu tarea, empezá por `docs/EXAM_BRIEF.md`, `docs/STUDENT_ASSIGNMENTS.md`, `docs/TASK_CONTEXT_GUIDE.md` y `docs/GIT_GUIDE.md`.
+
 ## Objetivo
 
 Este repositorio sirve como punto de partida para que los estudiantes trabajen sobre una base Java **compilable, documentada y verificable**, manteniendo el enfoque didáctico del compilador SQL original en C++.
@@ -93,6 +95,11 @@ La base incluye dos usuarios de demostración para orientar el flujo:
 
 ## Archivos clave para la evaluación
 
+- `docs/README.md` → índice general de documentación del examen
+- `docs/EXAM_BRIEF.md` → enunciado oficial
+- `docs/STUDENT_ASSIGNMENTS.md` → asignación de tareas
+- `docs/TASK_CONTEXT_GUIDE.md` → explicación detallada de cada tarea
+- `docs/GIT_GUIDE.md` → guía Git/GitHub y apoyo para líderes con `git worktree`
 - `docs/STUDENT_SETUP.md` → guía de instalación y uso para estudiantes
 - `docs/LEADERS_PLAYBOOK.md` → guía operativa para líderes revisores
 - `.github/pull_request_template.md` → plantilla obligatoria de PR
