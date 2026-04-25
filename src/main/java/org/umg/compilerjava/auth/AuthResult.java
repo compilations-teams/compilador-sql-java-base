@@ -15,6 +15,14 @@ public final class AuthResult {
         this.message = message;
     }
 
+    public static AuthResult success(String role, String message) {
+        return new AuthResult(true, role, message);
+    }
+
+    public static AuthResult failure(String message) {
+        return new AuthResult(false, "", message);
+    }
+
     public boolean isSuccess() {
         return success;
     }
