@@ -52,7 +52,7 @@ public final class Lexer {
         }
 
         if (Character.isDigit(currentChar)) {
-            return readNumber();
+            return readNumberToken();
         }
 
         if (currentChar == '\'') {
@@ -137,7 +137,7 @@ public final class Lexer {
         return new Token(TokenType.IDENTIFIER, value, startLine, startColumn);
     }
 
-    private Token readNumber() {
+    private Token readNumberToken() {
         int startLine = line;
         int startColumn = column;
         StringBuilder builder = new StringBuilder();
