@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,9 +37,10 @@ public final class LoginFrame extends JFrame {
 
     private void buildUi() {
         JPanel formPanel = new JPanel(new GridLayout(5, 1, 8, 8));
-        formPanel.add(new JLabel("Work Email"));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        formPanel.add(new JLabel("Correo institucional"));
         formPanel.add(emailField);
-        formPanel.add(new JLabel("Password"));
+        formPanel.add(new JLabel("Contraseña"));
         formPanel.add(passwordField);
 
         JButton loginButton = new JButton("Sign In");
@@ -49,12 +51,26 @@ public final class LoginFrame extends JFrame {
             }
         });
         formPanel.add(loginButton);
+        getRootPane().setDefaultButton(loginButton);
 
         add(formPanel, BorderLayout.CENTER);
     }
 
     private void authenticate() {
-        AuthResult result = authService.authenticate(emailField.getText(), new String(passwordField.getPassword()));
+        String email = emailField.getText() == null ? "" : emailField.getText().trim();
+        String password = new String(passwordField.getPassword());
+
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresá tu correo institucional.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (password.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresá tu contraseña.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        AuthResult result = authService.authenticate(email, password);
         if (!result.isSuccess()) {
             JOptionPane.showMessageDialog(this, result.getMessage(), "Login inválido", JOptionPane.ERROR_MESSAGE);
             return;
