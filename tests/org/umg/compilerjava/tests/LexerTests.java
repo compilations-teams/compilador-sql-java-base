@@ -11,6 +11,7 @@ public final class LexerTests {
         tokenizesBasicQuery();
         supportsCommentsAndStrings();
         tokenizesAndOrKeywords();
+        tokenizesQueryWithExtraSpaces();
     }
 
     private void tokenizesBasicQuery() {
@@ -38,5 +39,14 @@ public final class LexerTests {
         }
         Assert.isTrue(hasAnd, "Debe reconocer AND");
         Assert.isTrue(hasOr, "Debe reconocer OR");
+    }
+
+    private void tokenizesQueryWithExtraSpaces() {
+        List<Token> tokens = new Lexer("  SELECT   edad   FROM   clientes ;  ").tokenize();
+        Assert.equals(TokenType.SELECT, tokens.get(0).getType(), "Debe reconocer SELECT con espacios");
+        Assert.equals(TokenType.IDENTIFIER, tokens.get(1).getType(), "Debe reconocer la columna edad");
+        Assert.equals(TokenType.FROM, tokens.get(2).getType(), "Debe reconocer FROM con espacios");
+        Assert.equals(TokenType.IDENTIFIER, tokens.get(3).getType(), "Debe reconocer la tabla clientes");
+        Assert.equals(TokenType.SEMICOLON, tokens.get(4).getType(), "Debe reconocer ;");
     }
 }
