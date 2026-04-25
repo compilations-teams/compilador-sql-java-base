@@ -127,10 +127,30 @@ public final class LoginFrame extends JFrame {
     }
 
     private void authenticate() {
-        AuthResult result = authService.authenticate(
-                emailField.getText(),
-                new String(passwordField.getPassword())
-        );
+        String email = emailField.getText().trim();
+        String password = new String(passwordField.getPassword());
+
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El correo es obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!email.contains("@")) {
+            JOptionPane.showMessageDialog(this, "Correo inválido", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "La contraseña es obligatoria", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (password.length() < 4) {
+            JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 4 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        AuthResult result = authService.authenticate(email, password);
 
         if (!result.isSuccess()) {
             JOptionPane.showMessageDialog(this, result.getMessage(), "Login inválido", JOptionPane.ERROR_MESSAGE);
