@@ -100,3 +100,27 @@ refactor: migra token cpp a token java
 scripts\build.bat
 scripts\test.bat
 ```
+
+## Nota tecnica de pruebas
+
+Esta base usa pruebas en Java puro (sin JUnit ni Maven/Gradle).
+
+Comandos oficiales:
+
+### Linux/macOS
+
+```bash
+./scripts/build.sh
+./scripts/test.sh
+```
+
+### Windows
+
+```bat
+scripts\build.bat
+scripts\test.bat
+```
+
+Runner de pruebas:
+- Clase principal: `org.umg.compilerjava.tests.RunAllTests`
+- Ubicacion: `tests/org/umg/compilerjava/tests/RunAllTests.java`
