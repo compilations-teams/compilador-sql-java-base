@@ -86,6 +86,32 @@ java -cp build/classes org.umg.compilerjava.Main
 java -cp build/classes org.umg.compilerjava.Main examples/query1.sql
 ```
 
+## Ejecutar con Docker
+
+El proyecto incluye Docker para compilar con Java 17 sin instalar JDK en la máquina local.
+
+### Hot reload en modo CLI
+
+```bash
+docker compose up --build app
+```
+
+Por defecto compila y ejecuta `examples/query1.sql`. Para usar otro archivo:
+
+```bash
+SQL_FILE=examples/query2.sql docker compose up --build app
+```
+
+Cada cambio en `src/`, `tests/`, `examples/` o `scripts/` dispara una recompilación.
+
+### Hot reload de pruebas
+
+```bash
+docker compose --profile tests up --build tests
+```
+
+Este modo recompila y ejecuta la suite de pruebas cuando cambia el código.
+
 ## Credenciales demo
 
 La base incluye dos usuarios de demostración para orientar el flujo:

@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - .:/app
+    environment:
+      SQL_FILE: ${SQL_FILE:-examples/query1.sql}
+      WATCH_INTERVAL: ${WATCH_INTERVAL:-1}
+      RUN_TESTS: ${RUN_TESTS:-false}
+    command: ./scripts/docker-hot-reload.sh
+    stdin_open: true
+    tty: true
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - .:/app
+    environment:
+      WATCH_INTERVAL: ${WATCH_INTERVAL:-1}
+      RUN_TESTS: "true"
+    command: ./scripts/docker-hot-reload.sh
+    profiles:
+      - tests

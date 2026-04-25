@@ -1,0 +1,6 @@
+.git
+build
+*.class
+.idea
+.vscode
+.DS_Store
