@@ -32,6 +32,11 @@ public final class SemanticAnalyzer {
                 return false;
             }
 
+            // 2. Validar que las columnas solicitadas existan en la tabla
+            validateColumns(ast, table);
+            // 3. Validar que la condición (si existe) use tipos compatibles
+            validateCondition(ast.getWhereCondition(), table);
+
             System.out.println("Análisis semántico completado.");
 
         } catch (Exception e) {
