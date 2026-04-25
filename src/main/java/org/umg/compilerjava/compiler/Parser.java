@@ -58,6 +58,7 @@ public final class Parser {
         }
     }
 
+    // T-15: Condición WHERE simple (parse left expression, operator y right expression)
     private ConditionNode parseCondition() {
         ExpressionNode left = parseExpression();
         CompOperator operator = tokenTypeToCompOperator(currentToken.getType());
