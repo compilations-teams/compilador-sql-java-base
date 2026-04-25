@@ -7,6 +7,7 @@ public enum TokenType {
     WHERE,
     IDENTIFIER,
     NUMBER,
+    FLOAT,
     STRING,
     EQUAL,
     GREATER,
