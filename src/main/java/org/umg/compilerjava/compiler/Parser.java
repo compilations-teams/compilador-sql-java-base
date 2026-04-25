@@ -84,7 +84,7 @@ public final class Parser {
             advance();
             return new ExpressionNode(ExpressionNode.ExprType.IDENTIFIER, value);
         }
-        if (check(TokenType.NUMBER)) {
+        if (check(TokenType.NUMBER) || check(TokenType.FLOAT)) {
             String value = currentToken.getValue();
             advance();
             return new ExpressionNode(ExpressionNode.ExprType.NUMBER, value);
