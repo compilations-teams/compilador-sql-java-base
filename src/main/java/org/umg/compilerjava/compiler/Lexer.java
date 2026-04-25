@@ -167,10 +167,19 @@ public final class Lexer {
 
         advance();
         while (currentChar != '\0' && currentChar != '\'') {
-            builder.append(currentChar);
+            if (currentChar == '\\') {
+                advance();
+                if (currentChar == '\'') {
+                    builder.append('\'');
+                } else {
+                    builder.append('\\');
+                    builder.append(currentChar);
+                }
+            } else {
+                builder.append(currentChar);
+            }
             advance();
         }
-
         if (currentChar != '\'') {
             return new Token(TokenType.INVALID, builder.toString(), startLine, startColumn);
         }
