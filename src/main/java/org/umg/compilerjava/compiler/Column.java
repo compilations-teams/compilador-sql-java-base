@@ -6,6 +6,12 @@ public final class Column {
     private final DataType type;
     private final boolean nullable;
 
+    public Column(String name, DataType type) {
+        this.name = name;
+        this.type = type;
+        this.nullable = true;
+    }
+
     public Column(String name, DataType type, boolean nullable) {
         this.name = name;
         this.type = type;
@@ -29,5 +35,3 @@ public final class Column {
         return "Column{name='" + name + "', type=" + type + ", nullable=" + nullable + "}";
     }
 }
-
-
