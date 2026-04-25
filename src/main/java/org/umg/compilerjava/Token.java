@@ -1,5 +1,7 @@
 package org.umg.compilerjava;
 
+import org.umg.compilerjava.compiler.TokenType;
+
 /**
  * Representa un Token del analizador léxico
  * Migrado de: struct Token en Token.h (C++)
