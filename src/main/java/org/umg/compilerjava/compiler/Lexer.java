@@ -22,51 +22,23 @@ public final class Lexer {
         this.currentChar = this.source.isEmpty() ? '\0' : this.source.charAt(0);
     }
 
+
+    /**
+     * Recorre toda la entrada SQL y construye la lista completa de tokens.
+     * Llama repetidamente a getNextToken() hasta encontrar END_OF_FILE.
+     * El token END_OF_FILE siempre se incluye al final de la lista.
+     *
+     * @return lista ordenada de todos los tokens, incluido END_OF_FILE
+     */
     public List<Token> tokenize() {
 
-        /*
-        * Recorre la entrada del SQL y contruye una lista completa de tokens
-        * Se llama repetidamente al método getNextToken() hasta que se pueda
-        * encontrar END_OF_FILE.
-        * Dicho token se incluye al final de la lista creada.
-        *
-        * Para facilitar lso reportes de errores léxicos los tokens inválidos
-        * se acumulan en invalidTokens
-        *
-        * @return lista ordenada de todos los tokens, incluido END_OF_FILE
-        * */
-
-        List<Token> tokens = new ArrayList<Token>();
-        List<Token> invalidTokens = new ArrayList<>();
-        int safetyLimit = source.length() + 10;
-        int iterations = 0;
-
+        List<Token> tokens = new ArrayList<>();
         Token token;
         do {
             token = getNextToken();
             tokens.add(token);
-
-            //Identificar tokesn invalidos
-            if (token.getType() == TokenType.INVALID) {
-                invalidTokens.add(token);
-            }
-
-            iterations++;
-            if(iterations > safetyLimit) {
-
-                // En el caso que el lexer no avanza
-                tokens.add(new Token(TokenType.END_OF_FILE, "", line, column));
-                break;
-            }
-
         } while (token.getType() != TokenType.END_OF_FILE);
         return tokens;
-
-        /*
-        * Se devuelven los tokens invalidos encontrados durante el tokenize()
-        * La implementacion sería útil para reportar errores léxicos a los usuarios
-        * */
-
     }
 
     public List<Token> getInvalidTokens() {
