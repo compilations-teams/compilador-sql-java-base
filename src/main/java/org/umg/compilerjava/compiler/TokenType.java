@@ -18,5 +18,18 @@ public enum TokenType {
     COMMA,
     SEMICOLON,
     END_OF_FILE,
-    INVALID
+    INVALID;
+
+    public boolean isKeyword() {
+        return this == SELECT || this == FROM || this == WHERE;
+    }
+
+    public boolean isOperator() {
+        return this == EQUAL || this == GREATER || this == LESS
+            || this == GREATER_EQUAL || this == LESS_EQUAL || this == NOT_EQUAL;
+    }
+
+    public boolean isLiteral() {
+        return this == NUMBER || this == STRING;
+    }
 }
