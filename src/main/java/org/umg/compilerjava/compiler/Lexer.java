@@ -143,21 +143,31 @@ public final class Lexer {
         int startColumn = column;
         StringBuilder builder = new StringBuilder();
 
+        boolean isFloat = false;
+
+        // Parte entera
         while (currentChar != '\0' && Character.isDigit(currentChar)) {
             builder.append(currentChar);
             advance();
         }
 
-        if (currentChar == '.') {
+        // Parte decimal (solo si hay dígitos después del punto)
+        if (currentChar == '.' && Character.isDigit(peek())) {
+            isFloat = true;
             builder.append(currentChar);
             advance();
+
             while (currentChar != '\0' && Character.isDigit(currentChar)) {
                 builder.append(currentChar);
                 advance();
             }
         }
 
-        return new Token(TokenType.NUMBER, builder.toString(), startLine, startColumn);
+        if (isFloat) {
+            return new Token(TokenType.FLOAT, builder.toString(), startLine, startColumn);
+        } else {
+            return new Token(TokenType.NUMBER, builder.toString(), startLine, startColumn);
+        }
     }
 
     private Token readString() {
