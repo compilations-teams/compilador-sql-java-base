@@ -1,6 +1,6 @@
 package org.umg.compilerjava.tests;
 
-/** Ejecuta todas las pruebas mínimas del proyecto base. */
+/** Ejecuta todas las pruebas minimas del proyecto base. */
 public final class RunAllTests {
 
     private RunAllTests() {
@@ -44,13 +44,20 @@ public final class RunAllTests {
             }
         });
 
+        executed += run("AstAndSymbolTableTests", new Runnable() {
+            @Override
+            public void run() {
+                new AstAndSymbolTableTests().run();
+            }
+        });
+
         System.out.println("Total suites ejecutadas: " + executed);
-        System.out.println("✅ Todas las pruebas pasaron");
+        System.out.println("Todas las pruebas pasaron");
     }
 
     private static int run(String name, Runnable suite) {
         suite.run();
-        System.out.println("✔ " + name);
+        System.out.println("OK " + name);
         return 1;
     }
 }
