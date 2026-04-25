@@ -62,22 +62,29 @@ public final class SemanticAnalyzer {
     }
 
     private DataType getExpressionType(ExpressionNode expression, Table table) {
-        switch (expression.getType()) {
-            case NUMBER:
-                return expression.getValue().contains(".") ? DataType.FLOAT : DataType.INT;
-            case STRING:
-                return DataType.VARCHAR;
-            case IDENTIFIER:
-                Column column = table.findColumn(expression.getValue());
-                if (column == null) {
-                    errors.add("Columna '" + expression.getValue() + "' no existe en la tabla '" + table.getName() + "'");
-                    return DataType.VARCHAR;
-                }
-                return column.getType();
-            default:
-                return DataType.VARCHAR;
-        }
+    if (expression == null) {
+        return DataType.VARCHAR;
     }
+
+    switch (expression.getType()) {
+        case NUMBER:
+            return expression.getValue().contains(".") ? DataType.FLOAT : DataType.INT;
+
+        case STRING:
+            return DataType.VARCHAR;
+
+        case IDENTIFIER:
+            Column column = table.findColumn(expression.getValue());
+            if (column == null) {
+                errors.add("Columna '" + expression.getValue() + "' no existe en la tabla '" + table.getName() + "'");
+                return DataType.VARCHAR;
+            }
+            return column.getType();
+
+        default:
+            return DataType.VARCHAR;
+    }
+}
 
     private boolean areCompatible(DataType left, DataType right) {
         if (left == right) {
