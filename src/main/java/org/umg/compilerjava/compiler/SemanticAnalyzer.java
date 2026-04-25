@@ -32,6 +32,9 @@ public final class SemanticAnalyzer {
                 return false;
             }
 
+            validateColumns(ast, table);
+            validateCondition(ast.getWhereCondition(), table);
+
             System.out.println("Análisis semántico completado.");
 
         } catch (Exception e) {
