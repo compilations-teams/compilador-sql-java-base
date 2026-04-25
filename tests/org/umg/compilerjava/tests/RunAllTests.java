@@ -44,6 +44,13 @@ public final class RunAllTests {
             }
         });
 
+        executed += run("ConditionNodeTests", new Runnable() {
+            @Override
+            public void run() {
+                ConditionNodeTests.run();
+            }
+        });
+
         System.out.println("Total suites ejecutadas: " + executed);
         System.out.println("✅ Todas las pruebas pasaron");
     }

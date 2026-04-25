@@ -1,6 +1,7 @@
 package org.umg.compilerjava.compiler;
 
-/** Nodo de expresión simple. */
+import java.util.Objects;
+
 public final class ExpressionNode {
 
     public enum ExprType {
@@ -23,5 +24,23 @@ public final class ExpressionNode {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpressionNode that = (ExpressionNode) o;
+        return type == that.type && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, value);
+    }
+
+    @Override
+    public String toString() {
+        return "ExpressionNode{" + type + ", " + value + "}";
     }
 }
