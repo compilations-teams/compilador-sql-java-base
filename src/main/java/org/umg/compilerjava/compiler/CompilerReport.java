@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Resultado completo del pipeline de compilación. */
 public final class CompilerReport {
 
     private final boolean success;
     private final List<Token> tokens;
     private final List<String> diagnostics;
-    private final SelectNode ast;
+    private final StatementNode ast;
 
-    public CompilerReport(boolean success, List<Token> tokens, List<String> diagnostics, SelectNode ast) {
+    public CompilerReport(boolean success, List<Token> tokens, List<String> diagnostics, StatementNode ast) {
         this.success = success;
         this.tokens = new ArrayList<Token>(tokens);
         this.diagnostics = new ArrayList<String>(diagnostics);
@@ -31,7 +30,7 @@ public final class CompilerReport {
         return Collections.unmodifiableList(diagnostics);
     }
 
-    public SelectNode getAst() {
+    public StatementNode getAst() {
         return ast;
     }
 

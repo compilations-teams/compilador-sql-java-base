@@ -10,6 +10,6 @@ mkdir "%MAIN_CLASSES%"
 
 dir /s /b "%ROOT_DIR%\src\main\java\*.java" > "%BUILD_DIR%\main-sources.txt"
 
-javac -encoding UTF-8 -d "%MAIN_CLASSES%" @"%BUILD_DIR%\main-sources.txt"
+"C:\Program Files\Java\jdk-17\bin\javac.exe" -encoding UTF-8 -source 8 -target 8 -d "%MAIN_CLASSES%" @"%BUILD_DIR%\main-sources.txt"
 
 echo Build completado en %MAIN_CLASSES%

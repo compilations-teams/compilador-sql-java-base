@@ -58,6 +58,34 @@ compilador-sql-java-base/
 scripts\build.bat
 ```
 
+## Tabla de Símbolos (Symbol Table)
+
+La implementación actual soporta:
+
+- **Tablas**: Registro dinámico de tablas con `addTable()`, búsqueda con `findTable()` y `containsTable()`
+- **Columnas**: Agregado con `addColumn()`, búsqueda con `findColumn()` y detección de duplicados
+- **Validación semántica**: El `SemanticAnalyzer` verifica existencia de tablas y columnas en consultas SELECT
+
+### API principal
+
+```java
+SymbolTable symbolTable = new SymbolTable();
+symbolTable.addTable("usuarios");           // Agregar tabla
+Table t = symbolTable.findTable("usuarios"); // Buscar tabla
+t.addColumn("edad", DataType.INT);     // Agregar columna
+
+// En el flujo del compilador
+CompilerFacade facade = new CompilerFacade();
+facade.compile("CREATE TABLE users (id INT, name VARCHAR);");
+```
+
+### Integración con el flujo
+
+1. **Lexer** tokeniza `CREATE TABLE`, nombres de tablas, columnas y tipos (INT, FLOAT, VARCHAR)
+2. **Parser** crea `CreateTableNode` con las definiciones de columnas
+3. **CompilerFacade** registra la tabla y columnas en la SymbolTable
+4. **SemanticAnalyzer** valida consultas contra las tablas registradas
+
 ## Ejecutar pruebas
 
 ### Linux / macOS

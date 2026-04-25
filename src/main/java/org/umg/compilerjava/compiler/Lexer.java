@@ -93,6 +93,10 @@ public final class Lexer {
                 return new Token(TokenType.COMMA, ",", startLine, startColumn);
             case ';':
                 return new Token(TokenType.SEMICOLON, ";", startLine, startColumn);
+            case '(':
+                return new Token(TokenType.LEFT_PAREN, "(", startLine, startColumn);
+            case ')':
+                return new Token(TokenType.RIGHT_PAREN, ")", startLine, startColumn);
             default:
                 return new Token(TokenType.INVALID, String.valueOf(consumed), startLine, startColumn);
         }
@@ -134,6 +138,21 @@ public final class Lexer {
         }
         if ("WHERE".equals(upper)) {
             return new Token(TokenType.WHERE, value, startLine, startColumn);
+        }
+        if ("CREATE".equals(upper)) {
+            return new Token(TokenType.CREATE, value, startLine, startColumn);
+        }
+        if ("TABLE".equals(upper)) {
+            return new Token(TokenType.TABLE, value, startLine, startColumn);
+        }
+        if ("INT".equals(upper)) {
+            return new Token(TokenType.INT, value, startLine, startColumn);
+        }
+        if ("FLOAT".equals(upper)) {
+            return new Token(TokenType.FLOAT, value, startLine, startColumn);
+        }
+        if ("VARCHAR".equals(upper)) {
+            return new Token(TokenType.VARCHAR, value, startLine, startColumn);
         }
         return new Token(TokenType.IDENTIFIER, value, startLine, startColumn);
     }

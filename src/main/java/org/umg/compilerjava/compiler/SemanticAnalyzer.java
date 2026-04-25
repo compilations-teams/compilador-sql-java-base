@@ -16,21 +16,27 @@ public final class SemanticAnalyzer {
         this.symbolTable = symbolTable;
     }
 
-    public boolean analyze(SelectNode ast) {
+    public boolean analyze(StatementNode ast) {
         errors.clear();
         if (ast == null) {
             errors.add("AST vacío");
             return false;
         }
 
-        Table table = symbolTable.findTable(ast.getTableName());
+        if (!(ast instanceof SelectNode)) {
+            return true;
+        }
+
+        SelectNode selectNode = (SelectNode) ast;
+
+Table table = symbolTable.findTable(selectNode.getTableName());
         if (table == null) {
-            errors.add("Tabla '" + ast.getTableName() + "' no existe en el schema");
+            errors.add("Tabla '" + selectNode.getTableName() + "' no existe en el schema");
             return false;
         }
 
-        validateColumns(ast, table);
-        validateCondition(ast.getWhereCondition(), table);
+        validateColumns(selectNode, table);
+        validateCondition(selectNode.getWhereCondition(), table);
         return errors.isEmpty();
     }
 

@@ -2,9 +2,6 @@ package org.umg.compilerjava.compiler;
 
 import java.util.List;
 
-/**
- * Parser descendente recursivo para la gramática básica SELECT-FROM-WHERE.
- */
 public final class Parser {
 
     private final List<Token> tokens;
@@ -17,7 +14,18 @@ public final class Parser {
         this.currentToken = tokens.isEmpty() ? new Token(TokenType.END_OF_FILE, "", 1, 1) : tokens.get(0);
     }
 
-    public SelectNode parse() {
+    public StatementNode parse() {
+        if (check(TokenType.SELECT)) {
+            return parseSelect();
+        }
+        if (check(TokenType.CREATE)) {
+            return parseCreateTable();
+        }
+        error("Se esperaba SELECT o CREATE TABLE");
+        return null;
+    }
+
+    private StatementNode parseSelect() {
         SelectNode selectNode = new SelectNode();
         expect(TokenType.SELECT);
         parseColumns(selectNode);
@@ -39,6 +47,68 @@ public final class Parser {
         }
 
         return selectNode;
+    }
+
+    private StatementNode parseCreateTable() {
+        expect(TokenType.CREATE);
+        expect(TokenType.TABLE);
+        Token tableToken = expect(TokenType.IDENTIFIER);
+        String tableName = tableToken.getValue();
+
+        expect(TokenType.LEFT_PAREN);
+
+        CreateTableNode createTableNode = new CreateTableNode();
+        createTableNode.setTableName(tableName);
+
+        parseColumnDefinitions(createTableNode);
+
+        expect(TokenType.RIGHT_PAREN);
+
+        if (check(TokenType.SEMICOLON)) {
+            advance();
+        }
+
+        return createTableNode;
+    }
+
+    private void parseColumnDefinitions(CreateTableNode createTableNode) {
+        Token columnNameToken = expect(TokenType.IDENTIFIER);
+        String columnName = columnNameToken.getValue();
+
+        DataType columnType = tokenToDataType(expectDataTypeToken());
+        createTableNode.addColumn(columnName, columnType);
+
+        while (check(TokenType.COMMA)) {
+            advance();
+            Token nextColumnName = expect(TokenType.IDENTIFIER);
+            String nextName = nextColumnName.getValue();
+            DataType nextType = tokenToDataType(expectDataTypeToken());
+            createTableNode.addColumn(nextName, nextType);
+        }
+    }
+
+    private DataType tokenToDataType(TokenType type) {
+        switch (type) {
+            case INT:
+                return DataType.INT;
+            case FLOAT:
+                return DataType.FLOAT;
+            case VARCHAR:
+                return DataType.VARCHAR;
+            default:
+                error("Se esperaba un tipo de dato válido (INT, FLOAT, VARCHAR)");
+                return DataType.VARCHAR;
+        }
+    }
+
+    private TokenType expectDataTypeToken() {
+        TokenType type = currentToken.getType();
+        if (type != TokenType.INT && type != TokenType.FLOAT && type != TokenType.VARCHAR) {
+            error("Se esperaba INT, FLOAT o VARCHAR pero se encontró " + type);
+        }
+        Token consumed = currentToken;
+        advance();
+        return consumed.getType();
     }
 
     private void parseColumns(SelectNode selectNode) {

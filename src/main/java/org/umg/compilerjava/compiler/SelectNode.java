@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** AST raíz para una consulta SELECT. */
-public final class SelectNode {
+public final class SelectNode extends StatementNode {
 
     private boolean selectAll;
     private String tableName = "";
