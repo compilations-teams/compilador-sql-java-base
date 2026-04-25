@@ -1,7 +1,6 @@
 package org.umg.compilerjava.compiler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -10,7 +9,7 @@ import java.util.List;
 public final class SemanticAnalyzer {
 
     private final SymbolTable symbolTable;
-    private final List<String> errors = new ArrayList<String>();
+    private final List<String> errors = new ArrayList<>();
 
     public SemanticAnalyzer(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -18,25 +17,35 @@ public final class SemanticAnalyzer {
 
     public boolean analyze(SelectNode ast) {
         errors.clear();
+
         if (ast == null) {
-            errors.add("AST vacío");
+            errors.add("Error Semántico: El AST está vacío.");
             return false;
         }
 
-        Table table = symbolTable.findTable(ast.getTableName());
-        if (table == null) {
-            errors.add("Tabla '" + ast.getTableName() + "' no existe en el schema");
+        try {
+            // 1. Validar que la tabla exista en la SymbolTable
+            Table table = symbolTable.findTable(ast.getTableName());
+            
+            if (table == null) {
+                errors.add("Error Semántico: La tabla '" + ast.getTableName() + "' no existe.");
+                return false;
+            }
+
+            System.out.println("Análisis semántico completado.");
+
+        } catch (Exception e) {
+            errors.add("Error: " + e.getMessage());
             return false;
         }
 
-        validateColumns(ast, table);
-        validateCondition(ast.getWhereCondition(), table);
         return errors.isEmpty();
     }
 
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors);
+        return errors;
     }
+
 
     private void validateColumns(SelectNode ast, Table table) {
         if (ast.isSelectAll()) {
@@ -94,3 +103,5 @@ public final class SemanticAnalyzer {
             || (left == DataType.INT && right == DataType.FLOAT);
     }
 }
+
+
