@@ -132,6 +132,12 @@ public final class Lexer {
         if ("FROM".equals(upper)) {
             return new Token(TokenType.FROM, value, startLine, startColumn);
         }
+        if ("AND".equals(upper)) {
+            return new Token(TokenType.AND, value, startLine, startColumn);
+        }
+        if ("OR".equals(upper)) {
+            return new Token(TokenType.OR, value, startLine, startColumn);
+        }
         if ("WHERE".equals(upper)) {
             return new Token(TokenType.WHERE, value, startLine, startColumn);
         }

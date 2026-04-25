@@ -14,6 +14,8 @@ public enum TokenType {
     GREATER_EQUAL,
     LESS_EQUAL,
     NOT_EQUAL,
+    AND,
+    OR,
     ASTERISK,
     COMMA,
     SEMICOLON,
