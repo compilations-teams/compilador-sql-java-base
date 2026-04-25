@@ -6,11 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.swing.SwingUtilities;
-import org.umg.compilerjava.auth.InMemoryAuthService;
 import org.umg.compilerjava.compiler.CompilerFacade;
 import org.umg.compilerjava.compiler.CompilerReport;
-import org.umg.compilerjava.ui.LoginFrame;
-import org.umg.compilerjava.ui.ResultFrame;
 
 /**
  * Punto de entrada de la aplicación Java.
@@ -55,10 +52,6 @@ public final class Main {
     }
 
     private static void openGui() {
-        final InMemoryAuthService authService = new InMemoryAuthService();
-        final CompilerFacade compilerFacade = new CompilerFacade();
-        final ResultFrame resultFrame = new ResultFrame(compilerFacade);
-        LoginFrame loginFrame = new LoginFrame(authService, resultFrame);
-        loginFrame.setVisible(true);
+        new MainController().start();
     }
 }
