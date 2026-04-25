@@ -54,21 +54,52 @@ public final class Parser {
     // Parser Para Querys del tipo: SELECT * FROM tabla [WHERE condición]; T-17
 
     private void parseColumns(SelectNode selectNode) {
-        if (check(TokenType.ASTERISK)) {
-            selectNode.setSelectAll(true);
-            advance();
-            return;
-        }
+    // Autor: Felix Daniel Flores Estrada - T-16 Parser parseColumns()
 
-        Token firstColumn = expect(TokenType.IDENTIFIER);
-        selectNode.addColumn(firstColumn.getValue());
-
-        while (check(TokenType.COMMA)) {
-            advance();
-            Token nextColumn = expect(TokenType.IDENTIFIER);
-            selectNode.addColumn(nextColumn.getValue());
-        }
+    // Caso especial: SELECT *
+    if (check(TokenType.ASTERISK)) {
+        selectNode.setSelectAll(true);
+        advance();
+        return;
     }
+
+    // Primera columna (obligatoria)
+    Token firstColumn = expect(TokenType.IDENTIFIER);
+    String firstName = firstColumn.getValue();
+
+    // Soporte para tabla.columna (ej: t.nombre)
+    if (check(TokenType.DOT)) {
+        advance();
+        Token colToken = expect(TokenType.IDENTIFIER);
+        firstName = firstName + "." + colToken.getValue();
+    }
+
+    // Soporte para alias (ej: nombre AS n)
+    if (check(TokenType.AS)) {
+        advance();
+        Token aliasToken = expect(TokenType.IDENTIFIER);
+        firstName = firstName + " AS " + aliasToken.getValue();
+    }
+
+    selectNode.addColumn(firstName);
+
+    // Columnas adicionales separadas por coma
+    while (check(TokenType.COMMA)) {
+        advance();
+        Token nextColumn = expect(TokenType.IDENTIFIER);
+        String nextName = nextColumn.getValue();
+
+        // Soporte para tabla.columna
+        if (check(TokenType.DOT)) {
+            advance();
+            Token colToken = expect(TokenType.IDENTIFIER);
+            nextName = nextName + "." + colToken.getValue();
+        }
+
+        // Soporte para alias
+        if (check(TokenType.AS)) {
+            advance();
+            Token aliasToken = expect(TokenType.IDENT
 
     private ConditionNode parseCondition() {
         ExpressionNode left = parseExpression();
@@ -141,3 +172,6 @@ public final class Parser {
         throw new CompilerException(message, currentToken.getLine(), currentToken.getColumn(), CompilerException.ErrorType.SYNTACTIC);
     }
 }
+
+parseColumns
+
