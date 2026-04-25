@@ -1,143 +1,132 @@
 package org.umg.compilerjava.compiler;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Parser descendente recursivo para la gramática básica SELECT-FROM-WHERE.
- */
-public final class Parser {
+public final class SemanticAnalyzer {
 
-    private final List<Token> tokens;
-    private int position;
-    private Token currentToken;
+    private final SymbolTable symbolTable;
+    private final List<String> errors = new ArrayList<>();
 
-    public Parser(List<Token> tokens) {
-        this.tokens = tokens;
-        this.position = 0;
-        this.currentToken = tokens.isEmpty() ? new Token(TokenType.END_OF_FILE, "", 1, 1) : tokens.get(0);
+    public SemanticAnalyzer(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 
-    // Parser Para Querys del tipo: SELECT columnas FROM tabla [WHERE condición];
-    // T-17
+    // Punto de entrada principal
+    /**
+     * Analiza el AST de una sentencia SELECT.
+     *
+     * @param ast nodo raíz producido por el Parser
+     * @return true si no se encontraron errores semánticos
+     */
+    public boolean analyze(SelectNode ast) {
+        errors.clear();
 
-    public SelectNode parse() {
-        SelectNode selectNode = new SelectNode();
-        // Select
-        expect(TokenType.SELECT);
-        // Columnas
-        parseColumns(selectNode);
-        // From
-        expect(TokenType.FROM);
-        // Tabla
-        Token tableToken = expect(TokenType.IDENTIFIER);
-        selectNode.setTableName(tableToken.getValue());
-
-        // Where (opcional)
-        if (check(TokenType.WHERE)) {
-            advance();
-            selectNode.setWhereCondition(parseCondition());
+        if (ast == null) {
+            errors.add("AST vacío");
+            return false;
         }
 
-        // Punto y coma opcional al final
-        if (check(TokenType.SEMICOLON)) {
-            advance();
+        // Verificar que la tabla exista en el schema
+        Table table = symbolTable.findTable(ast.getTableName());
+        if (table == null) {
+            errors.add("Tabla '" + ast.getTableName() + "' no existe en el schema");
+            return false;
         }
 
-        // Debe ser fin de archivo después de la consulta
-        if (!check(TokenType.END_OF_FILE)) {
-            error("Se esperaba fin de archivo después de la consulta");
-        }
+        validateColumns(ast, table);
 
-        return selectNode;
+        validateConditionTypes(ast.getWhereCondition(), table);
+
+        return errors.isEmpty();
     }
 
-    // Parser Para Querys del tipo: SELECT * FROM tabla [WHERE condición]; T-17
+    /** Retorna la lista de errores semánticos encontrados (inmutable). */
+    public List<String> getErrors() {
+        return Collections.unmodifiableList(errors);
+    }
 
-    private void parseColumns(SelectNode selectNode) {
-        if (check(TokenType.ASTERISK)) {
-            selectNode.setSelectAll(true);
-            advance();
+    // ------------------------------------------------------------------
+    // Validación de columnas del SELECT
+    // ------------------------------------------------------------------
+
+    private void validateColumns(SelectNode ast, Table table) {
+        if (ast.isSelectAll()) {
+            return;
+        }
+        for (String columnName : ast.getColumns()) {
+            if (table.findColumn(columnName) == null) {
+                errors.add("Columna '" + columnName
+                        + "' no existe en la tabla '" + table.getName() + "'");
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Validación de tipos en la condición WHERE 
+    // ------------------------------------------------------------------
+
+    private void validateConditionTypes(ConditionNode condition, Table table) {
+        if (condition == null) {
             return;
         }
 
-        Token firstColumn = expect(TokenType.IDENTIFIER);
-        selectNode.addColumn(firstColumn.getValue());
+        DataType leftType  = resolveExpressionType(condition.getLeft(),  table);
+        DataType rightType = resolveExpressionType(condition.getRight(), table);
 
-        while (check(TokenType.COMMA)) {
-            advance();
-            Token nextColumn = expect(TokenType.IDENTIFIER);
-            selectNode.addColumn(nextColumn.getValue());
+        if (!areTypesCompatible(leftType, rightType)) {
+            errors.add(
+                "Error de tipos en condición WHERE: "
+                + "no se puede comparar " + leftType
+                + " con " + rightType
+                + " usando el operador '" + condition.getOperator().getSymbol() + "'"
+            );
         }
     }
+    // ------------------------------------------------------------------
+    // Resolución del tipo de una expresión
+    // ------------------------------------------------------------------
 
-    private ConditionNode parseCondition() {
-        ExpressionNode left = parseExpression();
-        CompOperator operator = tokenTypeToCompOperator(currentToken.getType());
-        advance();
-        ExpressionNode right = parseExpression();
-        return new ConditionNode(left, operator, right);
-    }
+    private DataType resolveExpressionType(ExpressionNode expression, Table table) {
+        switch (expression.getType()) {
 
-    private ExpressionNode parseExpression() {
-        if (check(TokenType.IDENTIFIER)) {
-            String value = currentToken.getValue();
-            advance();
-            return new ExpressionNode(ExpressionNode.ExprType.IDENTIFIER, value);
-        }
-        if (check(TokenType.NUMBER) || check(TokenType.FLOAT)) {
-            String value = currentToken.getValue();
-            advance();
-            return new ExpressionNode(ExpressionNode.ExprType.NUMBER, value);
-        }
-        if (check(TokenType.STRING)) {
-            String value = currentToken.getValue();
-            advance();
-            return new ExpressionNode(ExpressionNode.ExprType.STRING, value);
-        }
-        error("Se esperaba una expresión");
-        return null;
-    }
+            case NUMBER:
+                return expression.getValue().contains(".") ? DataType.FLOAT : DataType.INT;
 
-    private CompOperator tokenTypeToCompOperator(TokenType tokenType) {
-        switch (tokenType) {
-            case EQUAL:
-                return CompOperator.EQUAL;
-            case GREATER:
-                return CompOperator.GREATER;
-            case LESS:
-                return CompOperator.LESS;
-            case GREATER_EQUAL:
-                return CompOperator.GREATER_EQUAL;
-            case LESS_EQUAL:
-                return CompOperator.LESS_EQUAL;
-            case NOT_EQUAL:
-                return CompOperator.NOT_EQUAL;
+            case STRING:
+                return DataType.VARCHAR;
+
+            case IDENTIFIER:
+                Column column = table.findColumn(expression.getValue());
+                if (column == null) {
+                    errors.add("Columna '" + expression.getValue()
+                            + "' no existe en la tabla '" + table.getName() + "'");
+                    return DataType.VARCHAR;
+                }
+                return column.getType();
+
             default:
-                error("Se esperaba un operador de comparación válido");
-                return CompOperator.EQUAL;
+                return DataType.VARCHAR;
         }
     }
 
-    private boolean check(TokenType type) {
-        return currentToken.getType() == type;
-    }
+    // ------------------------------------------------------------------
+    // Reglas de compatibilidad de tipos 
+    // ------------------------------------------------------------------
 
-    private Token expect(TokenType type) {
-        if (!check(type)) {
-            error("Se esperaba " + type + " pero se encontró " + currentToken.getType());
+    private boolean areTypesCompatible(DataType left, DataType right) {
+        if (left == right) {
+            return true;
         }
-        Token consumed = currentToken;
-        advance();
-        return consumed;
-    }
 
-    private void advance() {
-        position++;
-        currentToken = position < tokens.size() ? tokens.get(position)
-                : new Token(TokenType.END_OF_FILE, "", currentToken.getLine(), currentToken.getColumn());
-    }
+        boolean leftIsNumeric  = (left  == DataType.INT || left  == DataType.FLOAT);
+        boolean rightIsNumeric = (right == DataType.INT || right == DataType.FLOAT);
+        if (leftIsNumeric && rightIsNumeric) {
+            return true;
+        }
 
-    private void error(String message) {
-        throw new CompilerException(message, currentToken.getLine(), currentToken.getColumn());
+        return false;
+        //prueba
     }
 }
