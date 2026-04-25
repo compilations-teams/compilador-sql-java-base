@@ -182,3 +182,13 @@ git worktree remove ../review-mercedes
 - usar `git worktree` si revisan varios PR en paralelo
 
 Ese balance reduce complejidad para el alumno y mejora control para revisión.
+
+## Anexo - Runner de pruebas del proyecto
+
+Las pruebas del repositorio se ejecutan con Java puro.
+
+- Runner: `org.umg.compilerjava.tests.RunAllTests`
+- Archivo: `tests/org/umg/compilerjava/tests/RunAllTests.java`
+- Comando recomendado: `scripts/test.bat` (Windows) o `./scripts/test.sh` (Linux/macOS)
+
+Esto evita depender de Maven/Gradle y de configuraciones JUnit distintas entre IDEs.

@@ -49,3 +49,23 @@
 ## Nota
 
 La distribución puede ajustarse manualmente si un estudiante no participa, se retira o necesita reasignación.
+
+## Recordatorio operativo
+
+Antes de abrir PR, cada estudiante debe validar su rama con:
+
+### Linux/macOS
+
+```bash
+./scripts/build.sh
+./scripts/test.sh
+```
+
+### Windows
+
+```bat
+scripts\build.bat
+scripts\test.bat
+```
+
+Si el IDE muestra tests en rojo pero la terminal pasa, ejecutar el runner `RunAllTests` como aplicacion Java y no como suite JUnit.

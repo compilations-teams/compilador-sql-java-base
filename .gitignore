@@ -6,3 +6,5 @@ build/
 .vscode/
 out/
 target/
+
+examples/test_error.sql
