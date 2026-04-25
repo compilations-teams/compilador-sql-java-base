@@ -14,10 +14,12 @@ public final class SelectNode {
 
     public boolean isSelectAll() {
         return selectAll;
+
     }
 
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
+
     }
 
     public String getTableName() {
