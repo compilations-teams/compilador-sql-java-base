@@ -16,7 +16,7 @@ import org.umg.compilerjava.auth.AuthResult;
 import org.umg.compilerjava.auth.AuthService;
 
 /**
- * Login base en Swing para orientar la futura modernización visual.
+ * Login base en Swing para orientar la futura modernizacion visual.
  */
 public final class LoginFrame extends JFrame {
 
@@ -40,7 +40,7 @@ public final class LoginFrame extends JFrame {
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         formPanel.add(new JLabel("Correo institucional"));
         formPanel.add(emailField);
-        formPanel.add(new JLabel("Contraseña"));
+        formPanel.add(new JLabel("Contrasena"));
         formPanel.add(passwordField);
 
         JButton loginButton = new JButton("Sign In");
@@ -57,22 +57,34 @@ public final class LoginFrame extends JFrame {
     }
 
     private void authenticate() {
-        String email = emailField.getText() == null ? "" : emailField.getText().trim();
+        String rawEmail = emailField.getText();
+        String email = rawEmail == null ? "" : rawEmail.trim();
         String password = new String(passwordField.getPassword());
 
         if (email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresá tu correo institucional.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa tu correo institucional.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!email.contains("@")) {
+            JOptionPane.showMessageDialog(this, "Ingresa un correo valido.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (password.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresá tu contraseña.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ingresa tu contrasena.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (password.length() < 4) {
+            JOptionPane.showMessageDialog(this, "La contrasena debe tener al menos 4 caracteres.", "Dato requerido",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         AuthResult result = authService.authenticate(email, password);
         if (!result.isSuccess()) {
-            JOptionPane.showMessageDialog(this, result.getMessage(), "Login inválido", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, result.getMessage(), "Login invalido", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
