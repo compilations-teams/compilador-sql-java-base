@@ -66,26 +66,38 @@ public final class Parser {
         return new ConditionNode(left, operator, right);
     }
 
+    /**
+     * T-14: Implementación del análisis de expresiones.
+     * Una expresión en SQL básico puede ser un nombre de columna (IDENTIFIER),
+     * un número (NUMBER) o un texto (STRING).
+     */
     private ExpressionNode parseExpression() {
+        // Caso 1: La expresión es un nombre de columna o identificador
         if (check(TokenType.IDENTIFIER)) {
             String value = currentToken.getValue();
             advance();
             return new ExpressionNode(ExpressionNode.ExprType.IDENTIFIER, value);
         }
+        
+        // Caso 2: La expresión es un número literal
         if (check(TokenType.NUMBER)) {
             String value = currentToken.getValue();
             advance();
             return new ExpressionNode(ExpressionNode.ExprType.NUMBER, value);
         }
+        
+        // Caso 3: La expresión es una cadena de texto (ej. 'Guatemala')
         if (check(TokenType.STRING)) {
             String value = currentToken.getValue();
             advance();
             return new ExpressionNode(ExpressionNode.ExprType.STRING, value);
         }
-        error("Se esperaba una expresión");
+        
+        // Si no es ninguno de los anteriores, hay un error sintáctico
+        error("Error de sintaxis: Se esperaba un Identificador, Número o Cadena en la expresión.");
         return null;
     }
-
+    
     private CompOperator tokenTypeToCompOperator(TokenType tokenType) {
         switch (tokenType) {
             case EQUAL:
