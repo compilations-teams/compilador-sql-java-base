@@ -1,12 +1,17 @@
 package org.umg.compilerjava.compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Analizador léxico manual, inspirado directamente en la versión C++ educativa.
  */
 public final class Lexer {
+
+    private static final Map<String, TokenType> KEYWORDS = createKeywords();
 
     private final String source;
     private int position;
@@ -42,7 +47,7 @@ public final class Lexer {
         int startLine = line;
         int startColumn = column;
 
-        if (Character.isLetter(currentChar) || currentChar == '_') {
+        if (isIdentifierStart(currentChar)) {
             return readIdentifierOrKeyword();
         }
 
@@ -119,21 +124,15 @@ public final class Lexer {
         int startColumn = column;
         StringBuilder builder = new StringBuilder();
 
-        while (currentChar != '\0' && (Character.isLetterOrDigit(currentChar) || currentChar == '_')) {
+        while (isIdentifierPart(currentChar)) {
             builder.append(currentChar);
             advance();
         }
 
         String value = builder.toString();
-        String upper = value.toUpperCase();
-        if ("SELECT".equals(upper)) {
-            return new Token(TokenType.SELECT, value, startLine, startColumn);
-        }
-        if ("FROM".equals(upper)) {
-            return new Token(TokenType.FROM, value, startLine, startColumn);
-        }
-        if ("WHERE".equals(upper)) {
-            return new Token(TokenType.WHERE, value, startLine, startColumn);
+        TokenType keywordType = KEYWORDS.get(value.toUpperCase(Locale.ROOT));
+        if (keywordType != null) {
+            return new Token(keywordType, value, startLine, startColumn);
         }
         return new Token(TokenType.IDENTIFIER, value, startLine, startColumn);
     }
@@ -197,5 +196,21 @@ public final class Lexer {
             return '\0';
         }
         return source.charAt(nextPosition);
+    }
+
+    private static boolean isIdentifierStart(char value) {
+        return Character.isLetter(value) || value == '_';
+    }
+
+    private static boolean isIdentifierPart(char value) {
+        return Character.isLetterOrDigit(value) || value == '_';
+    }
+
+    private static Map<String, TokenType> createKeywords() {
+        Map<String, TokenType> keywords = new HashMap<String, TokenType>();
+        keywords.put("SELECT", TokenType.SELECT);
+        keywords.put("FROM", TokenType.FROM);
+        keywords.put("WHERE", TokenType.WHERE);
+        return keywords;
     }
 }
