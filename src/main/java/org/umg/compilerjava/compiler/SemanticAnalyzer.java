@@ -1,13 +1,12 @@
 package org.umg.compilerjava.compiler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class SemanticAnalyzer {
 
     private final SymbolTable symbolTable;
-    private final List<String> errors = new ArrayList<String>();
+    private final List<String> errors = new ArrayList<>();
 
     public SemanticAnalyzer(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
@@ -60,8 +59,6 @@ public final class SemanticAnalyzer {
                 errors.add("Columna '" + columnName
                         + "' no existe en la tabla '" + table.getName() + "'");
             }
-        }
-    }
 
     // ------------------------------------------------------------------
     // Validación de tipos en la condición WHERE 
@@ -83,7 +80,6 @@ public final class SemanticAnalyzer {
                 + " usando el operador '" + condition.getOperator().getSymbol() + "'"
             );
         }
-    }
 
     // ------------------------------------------------------------------
     // Resolución del tipo de una expresión
