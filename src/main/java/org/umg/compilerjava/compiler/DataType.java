@@ -4,5 +4,8 @@ package org.umg.compilerjava.compiler;
 public enum DataType {
     INT,
     FLOAT,
-    VARCHAR
+    VARCHAR,
+    BOOLEAN,
+    DATE
 }
+
