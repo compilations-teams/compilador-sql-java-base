@@ -125,6 +125,6 @@ public final class Parser {
     }
 
     private void error(String message) {
-        throw new CompilerException(message, currentToken.getLine(), currentToken.getColumn());
+        throw new CompilerException(message, currentToken.getLine(), currentToken.getColumn(), CompilerException.ErrorType.SYNTACTIC);
     }
 }
