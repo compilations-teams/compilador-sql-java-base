@@ -70,7 +70,25 @@ public final class Parser {
         }
     }
 
-    
+    /**
+     * T-15: Parseo de la condición WHERE simple.
+     * Este método corresponde a la tarea asignada (T-15) de migración desde la versión C++.
+     * Se invoca desde parse() para construir la parte condicional del SELECT.
+     * 
+     * Estructura esperada: <leftExpression> <operator> <rightExpression>
+     * Soporta operadores de comparación simples y literales (número, string, identificador).
+     */
+    private ConditionNode parseCondition() {
+        ExpressionNode left = parseExpression();
+        CompOperator operator = tokenTypeToCompOperator(currentToken.getType());
+        
+        advance();
+        
+        ExpressionNode right = parseExpression();
+        
+        return new ConditionNode(left, operator, right);
+    }
+
     private ExpressionNode parseExpression() {
         if (check(TokenType.IDENTIFIER)) {
             String value = currentToken.getValue();
