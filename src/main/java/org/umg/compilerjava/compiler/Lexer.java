@@ -22,8 +22,17 @@ public final class Lexer {
         this.currentChar = this.source.isEmpty() ? '\0' : this.source.charAt(0);
     }
 
+
+    /**
+     * Recorre toda la entrada SQL y construye la lista completa de tokens.
+     * Llama repetidamente a getNextToken() hasta encontrar END_OF_FILE.
+     * El token END_OF_FILE siempre se incluye al final de la lista.
+     *
+     * @return lista ordenada de todos los tokens, incluido END_OF_FILE
+     */
     public List<Token> tokenize() {
-        List<Token> tokens = new ArrayList<Token>();
+
+        List<Token> tokens = new ArrayList<>();
         Token token;
         do {
             token = getNextToken();
@@ -31,6 +40,13 @@ public final class Lexer {
         } while (token.getType() != TokenType.END_OF_FILE);
         return tokens;
     }
+
+    public List<Token> getInvalidTokens() {
+
+        //Se podría utilizar desde la UI para mostrar algunos errores
+        return java.util.Collections.unmodifiableList(new ArrayList<>());
+    }
+
 
     public Token getNextToken() {
         skipWhitespace();
