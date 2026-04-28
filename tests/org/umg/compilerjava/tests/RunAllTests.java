@@ -1,6 +1,5 @@
 package org.umg.compilerjava.tests;
 
-/** Ejecuta todas las pruebas minimas del proyecto base. */
 public final class RunAllTests {
 
     private RunAllTests() {
@@ -41,6 +40,12 @@ public final class RunAllTests {
             @Override
             public void run() {
                 new CompilerFacadeTests().run();
+            }
+        });
+        executed += run("ConditionNodeTests", new Runnable() {
+            @Override
+            public void run() {
+                ConditionNodeTests.run();
             }
         });
 
