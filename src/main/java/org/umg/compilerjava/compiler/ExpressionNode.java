@@ -14,6 +14,12 @@ public final class ExpressionNode {
     private final String value;
 
     public ExpressionNode(ExprType type, String value) {
+        if (type == null) {
+            throw new IllegalArgumentException("El tipo de expresión no puede ser nulo");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("El valor de la expresión no puede ser nulo");
+        }
         this.type = type;
         this.value = value;
     }
@@ -21,9 +27,22 @@ public final class ExpressionNode {
     public ExprType getType() {
         return type;
     }
-
+    
     public String getValue() {
         return value;
+    }
+
+    // Métodos útiles
+    public boolean isIdentifier() {
+        return type == ExprType.IDENTIFIER;
+    }
+
+    public boolean isNumber() {
+        return type == ExprType.NUMBER;
+    }
+
+    public boolean isString() {
+        return type == ExprType.STRING;
     }
 
     @Override
@@ -41,6 +60,6 @@ public final class ExpressionNode {
 
     @Override
     public String toString() {
-        return "ExpressionNode{" + type + ", " + value + "}";
+        return "ExpressionNode[type=" + type + ", value=" + value + "]";
     }
 }
