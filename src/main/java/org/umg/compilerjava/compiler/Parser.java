@@ -70,11 +70,19 @@ public final class Parser {
         }
     }
 
+    /**
+     * T-15: Parseo de la condición WHERE simple.
+     */
     private ConditionNode parseCondition() {
         ExpressionNode left = parseExpression();
         CompOperator operator = tokenTypeToCompOperator(currentToken.getType());
+        
         advance();
+
+        
         ExpressionNode right = parseExpression();
+        
+        
         return new ConditionNode(left, operator, right);
     }
 
