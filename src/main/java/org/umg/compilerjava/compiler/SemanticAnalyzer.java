@@ -27,11 +27,29 @@ public final class SemanticAnalyzer {
             errors.add("AST vacío");
             return false;
         }
+feature/glendi-expression-node
+        try {
+            // 1. Validar que la tabla exista en la SymbolTable
+            Table table = symbolTable.findTable(ast.getTableName());
+            
+            if (table == null) {
+                errors.add("Error Semántico: La tabla '" + ast.getTableName() + "' no existe.");
+                return false;
+            }
 
+            validateColumns(ast, table);
+            validateCondition(ast.getWhereCondition(), table);
+
+            System.out.println("Análisis semántico completado.");
+
+        } catch (Exception e) {
+            errors.add("Error: " + e.getMessage());
+=======
         // Verificar que la tabla exista en el schema
         Table table = symbolTable.findTable(ast.getTableName());
         if (table == null) {
             errors.add("Tabla '" + ast.getTableName() + "' no existe en el schema");
+main
             return false;
         }
 
