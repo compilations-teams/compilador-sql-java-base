@@ -47,3 +47,17 @@ Cuerpo:
 ## Regla operativa
 
 No mergear por presión. Si no está bien, se rechaza y se documenta.
+
+## Checklist tecnico rapido para aprobar PR
+
+1. Ejecutar build y tests en limpio.
+2. Confirmar que no se eliminaron scripts base en `scripts/`.
+3. Verificar que `RunAllTests` termina sin AssertionError.
+4. Confirmar que el PR no toca tareas ajenas sin justificacion.
+
+Comando recomendado en Windows:
+
+```bat
+scripts\build.bat
+scripts\test.bat
+```

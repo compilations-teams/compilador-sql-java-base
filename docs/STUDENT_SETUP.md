@@ -71,3 +71,12 @@ java -cp build/classes org.umg.compilerjava.Main examples/query1.sql
 ### Mi IDE usa una versión distinta de Java
 
 Usá Java 17 si lo tenés. Si no, esta base fue escrita para mantener compatibilidad con Java 8.
+
+## Ejecutar pruebas en IDE (sin JUnit)
+
+Esta base no usa JUnit. Si el IDE marca error al correr cada clase de test por separado, ejecutar:
+
+- Clase principal: `org.umg.compilerjava.tests.RunAllTests`
+- Archivo: `tests/org/umg/compilerjava/tests/RunAllTests.java`
+
+Alternativa segura: correr siempre `scripts/test.bat` o `./scripts/test.sh` desde terminal.

@@ -3,10 +3,13 @@ package org.umg.compilerjava.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import org.umg.compilerjava.compiler.CompilerFacade;
 import org.umg.compilerjava.compiler.CompilerReport;
@@ -35,7 +38,11 @@ public final class ResultFrame extends JFrame {
 
     private void buildUi() {
         inputArea.setText("SELECT nombre FROM usuarios WHERE edad > 18;");
+        inputArea.setLineWrap(true);
+        inputArea.setWrapStyleWord(true);
         outputArea.setEditable(false);
+        outputArea.setLineWrap(true);
+        outputArea.setWrapStyleWord(true);
 
         JButton runButton = new JButton("Compilar SQL");
         runButton.addActionListener(new ActionListener() {
@@ -45,12 +52,25 @@ public final class ResultFrame extends JFrame {
             }
         });
 
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(new JScrollPane(inputArea), BorderLayout.CENTER);
-        topPanel.add(runButton, BorderLayout.SOUTH);
+        JPanel inputPanel = new JPanel(new BorderLayout(0, 8));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Entrada SQL"));
+        inputPanel.add(new JScrollPane(inputArea), BorderLayout.CENTER);
 
-        add(topPanel, BorderLayout.NORTH);
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        JPanel outputPanel = new JPanel(new BorderLayout());
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Salida del compilador"));
+        outputPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, inputPanel, outputPanel);
+        splitPane.setResizeWeight(0.42);
+        splitPane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JPanel actionsPanel = new JPanel(new BorderLayout());
+        actionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+        actionsPanel.add(new JLabel("Modo Swing sin dependencias externas (sin JavaFX)."), BorderLayout.CENTER);
+        actionsPanel.add(runButton, BorderLayout.EAST);
+
+        add(splitPane, BorderLayout.CENTER);
+        add(actionsPanel, BorderLayout.SOUTH);
     }
 
     private void compileQuery() {

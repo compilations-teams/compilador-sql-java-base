@@ -638,3 +638,21 @@ Si no sabés por dónde empezar:
 5. hacé commit con mensaje claro
 
 Lo importante no es “parecer experto”. Lo importante es que se note que **entendiste, tocaste y defendés tu parte**.
+
+## Atajo de prueba general
+
+Para casi todas las tareas tecnicas, el cierre minimo recomendado es:
+
+### Linux/macOS
+
+```bash
+./scripts/test.sh
+```
+
+### Windows
+
+```bat
+scripts\test.bat
+```
+
+La suite se ejecuta desde `RunAllTests` y no requiere JUnit.

@@ -22,8 +22,17 @@ public final class Lexer {
         this.currentChar = this.source.isEmpty() ? '\0' : this.source.charAt(0);
     }
 
+
+    /**
+     * Recorre toda la entrada SQL y construye la lista completa de tokens.
+     * Llama repetidamente a getNextToken() hasta encontrar END_OF_FILE.
+     * El token END_OF_FILE siempre se incluye al final de la lista.
+     *
+     * @return lista ordenada de todos los tokens, incluido END_OF_FILE
+     */
     public List<Token> tokenize() {
-        List<Token> tokens = new ArrayList<Token>();
+
+        List<Token> tokens = new ArrayList<>();
         Token token;
         do {
             token = getNextToken();
@@ -31,6 +40,13 @@ public final class Lexer {
         } while (token.getType() != TokenType.END_OF_FILE);
         return tokens;
     }
+
+    public List<Token> getInvalidTokens() {
+
+        //Se podría utilizar desde la UI para mostrar algunos errores
+        return java.util.Collections.unmodifiableList(new ArrayList<>());
+    }
+
 
     public Token getNextToken() {
         skipWhitespace();
@@ -98,19 +114,47 @@ public final class Lexer {
         }
     }
 
+    /**
+     * Ignora espacios en blanco y comentarios SQL.
+     *
+     * Soporta:
+     * - espacios, tabs y saltos de línea
+     * - comentarios de una línea con --
+     * - comentarios de bloque con /* ... *\/
+     */
     private void skipWhitespace() {
-        while (currentChar != '\0' && Character.isWhitespace(currentChar)) {
-            advance();
-        }
+        boolean skipping = true;
 
-        if (currentChar == '-' && peek() == '-') {
-            while (currentChar != '\0' && currentChar != '\n') {
+        while (skipping && currentChar != '\0') {
+            skipping = false;
+
+            while (currentChar != '\0' && Character.isWhitespace(currentChar)) {
                 advance();
+                skipping = true;
             }
-            if (currentChar == '\n') {
+
+            if (currentChar == '-' && peek() == '-') {
+                while (currentChar != '\0' && currentChar != '\n') {
+                    advance();
+                }
+                skipping = true;
+            }
+
+            if (currentChar == '/' && peek() == '*') {
                 advance();
+                advance();
+
+                while (currentChar != '\0' && !(currentChar == '*' && peek() == '/')) {
+                    advance();
+                }
+
+                if (currentChar == '*' && peek() == '/') {
+                    advance();
+                    advance();
+                }
+
+                skipping = true;
             }
-            skipWhitespace();
         }
     }
 
@@ -126,6 +170,7 @@ public final class Lexer {
 
         String value = builder.toString();
         String upper = value.toUpperCase();
+
         if ("SELECT".equals(upper)) {
             return new Token(TokenType.SELECT, value, startLine, startColumn);
         }
@@ -135,6 +180,7 @@ public final class Lexer {
         if ("WHERE".equals(upper)) {
             return new Token(TokenType.WHERE, value, startLine, startColumn);
         }
+
         return new Token(TokenType.IDENTIFIER, value, startLine, startColumn);
     }
 
@@ -143,21 +189,31 @@ public final class Lexer {
         int startColumn = column;
         StringBuilder builder = new StringBuilder();
 
+        boolean isFloat = false;
+
+        // Parte entera
         while (currentChar != '\0' && Character.isDigit(currentChar)) {
             builder.append(currentChar);
             advance();
         }
 
-        if (currentChar == '.') {
+        // Parte decimal (solo si hay dígitos después del punto)
+        if (currentChar == '.' && Character.isDigit(peek())) {
+            isFloat = true;
             builder.append(currentChar);
             advance();
+
             while (currentChar != '\0' && Character.isDigit(currentChar)) {
                 builder.append(currentChar);
                 advance();
             }
         }
 
-        return new Token(TokenType.NUMBER, builder.toString(), startLine, startColumn);
+        if (isFloat) {
+            return new Token(TokenType.FLOAT, builder.toString(), startLine, startColumn);
+        } else {
+            return new Token(TokenType.NUMBER, builder.toString(), startLine, startColumn);
+        }
     }
 
     private Token readString() {
@@ -166,6 +222,7 @@ public final class Lexer {
         StringBuilder builder = new StringBuilder();
 
         advance();
+
         while (currentChar != '\0' && currentChar != '\'') {
             builder.append(currentChar);
             advance();
@@ -176,6 +233,7 @@ public final class Lexer {
         }
 
         advance();
+
         return new Token(TokenType.STRING, builder.toString(), startLine, startColumn);
     }
 
@@ -193,9 +251,11 @@ public final class Lexer {
 
     private char peek() {
         int nextPosition = position + 1;
+
         if (nextPosition >= source.length()) {
             return '\0';
         }
+
         return source.charAt(nextPosition);
     }
 }
